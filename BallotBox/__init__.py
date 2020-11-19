@@ -1,2 +1,2 @@
-import BallotBox.bot
-import BallotBox.extensions
+import bot
+import extensions

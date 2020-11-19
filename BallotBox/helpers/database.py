@@ -5,8 +5,8 @@ import logging
 import os
 import sqlite3
 
-from BallotBox.db_config import SCHEMA_VERSION
-from BallotBox.settings import DATABASE_URI
+from db_config import SCHEMA_VERSION
+from settings import DATABASE_URI
 
 log = logging.getLogger(__name__)
 

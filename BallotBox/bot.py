@@ -4,9 +4,9 @@ import sqlite3
 import discord
 from discord.ext import commands
 
-from BallotBox.extensions import INIT_EXTENSIONS
-from BallotBox.helpers.database import init_db
-from BallotBox.settings import DEBUG, COMMAND_PREFIX, TOKEN
+from extensions import INIT_EXTENSIONS
+from helpers.database import init_db
+from settings import DEBUG, COMMAND_PREFIX, TOKEN
 
 log = logging.getLogger(__name__)
 
