@@ -1,0 +1,15 @@
+PRAGMA foreign_keys = ON;
+
+-- Schema Version 1
+
+-- Stores All Suggestions
+CREATE TABLE IF NOT EXISTS suggestions (
+    msg         TEXT    PRIMARY KEY,
+    content     TEXT    NOT NULL,
+    author      INTEGER NOT NULL,
+    end_date    timestamp
+);
+
+-- Set Database Version to 1
+DELETE FROM meta;
+INSERT INTO meta VALUES (1);

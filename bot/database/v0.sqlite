@@ -1,0 +1,12 @@
+PRAGMA foreign_keys = ON;
+
+-- Schema Version 0
+
+-- Database Metadata
+CREATE TABLE IF NOT EXISTS meta (
+    version INTEGER PRIMARY KEY
+);
+
+-- Set Database Version to 0
+DELETE FROM meta;
+INSERT INTO meta VALUES (0);
