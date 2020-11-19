@@ -5,8 +5,8 @@ import logging
 import os
 import sqlite3
 
-from bot.db_config import SCHEMA_VERSION
-from bot.settings import DATABASE_URI
+from BallotBox.db_config import SCHEMA_VERSION
+from BallotBox.settings import DATABASE_URI
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +14,9 @@ try:
     """
     Import conn and/or c to execute database commands.
     """
-    conn = sqlite3.connect(DATABASE_URI, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    conn = sqlite3.connect(
+        DATABASE_URI, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+    )
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 except sqlite3.OperationalError:
@@ -40,7 +42,7 @@ def init_db():
     for v in range(0, SCHEMA_VERSION + 1):
         log.info(f"Updating database to schema version {v}")
         with open(
-                f"{os.path.dirname(os.path.abspath(__file__))}/../database/v{v}.sqlite", "r"
+            f"{os.path.dirname(os.path.abspath(__file__))}/../database/v{v}.sqlite", "r"
         ) as schema_file:
             schema = schema_file.read()
         conn.executescript(schema)

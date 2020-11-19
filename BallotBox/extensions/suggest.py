@@ -5,8 +5,8 @@ import discord
 import emoji
 from discord.ext import commands, tasks
 
-from bot.helpers.database import conn
-from bot.settings import SUGGEST_CHANNEL
+from BallotBox.helpers.database import conn
+from BallotBox.settings import SUGGEST_CHANNEL
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +36,10 @@ class Suggest(commands.Cog):
         await msg.add_reaction(emoji.emojize(":thumbs_up:"))
         await msg.add_reaction(emoji.emojize(":person_shrugging:"))
         await msg.add_reaction(emoji.emojize(":thumbs_down:"))
-        conn.execute("INSERT INTO suggestions VALUES (?, ?, ?, ?)", [msg.id, suggestion, ctx.author.id, end_date])
+        conn.execute(
+            "INSERT INTO suggestions VALUES (?, ?, ?, ?)",
+            [msg.id, suggestion, ctx.author.id, end_date],
+        )
         conn.commit()
 
     @tasks.loop(seconds=5.0)
@@ -51,7 +54,7 @@ class Suggest(commands.Cog):
             if end_date > datetime.datetime.now() - datetime.timedelta(seconds=5):
                 author = await self.bot.fetch_user(author_id)
                 msg = await channel.fetch_message(msg_id)
-                log.debug(f"Updated \"{content}\" by {author} which ends at {end_date}")
+                log.debug(f'Updated "{content}" by {author} which ends at {end_date}')
 
                 if end_date > datetime.datetime.now() + datetime.timedelta(days=1):
                     end_msg = "Voting ends in 2 days"
@@ -103,7 +106,7 @@ class Suggest(commands.Cog):
 
                 if end_date < datetime.datetime.now():
                     await msg.clear_reactions()
-                    if yes_count+no_count != 0:
+                    if yes_count + no_count != 0:
                         embed.add_field(
                             name=f":thumbsup:",
                             value=f"`{round(yes_count/(yes_count + no_count)*100)}%` ({yes_count} votes)",

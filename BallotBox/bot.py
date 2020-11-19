@@ -4,9 +4,9 @@ import sqlite3
 import discord
 from discord.ext import commands
 
-from bot.extensions import INIT_EXTENSIONS
-from bot.helpers.database import init_db
-from bot.settings import DEBUG, COMMAND_PREFIX, TOKEN
+from BallotBox.extensions import INIT_EXTENSIONS
+from BallotBox.helpers.database import init_db
+from BallotBox.settings import DEBUG, COMMAND_PREFIX, TOKEN
 
 log = logging.getLogger(__name__)
 
@@ -63,9 +63,9 @@ async def reload(ctx: commands.context):
             try:
                 bot.reload_extension(extension)
             except (
-                    ExtensionNotLoaded,
-                    ExtensionNotFound,
-                    ExtensionFailed,
+                ExtensionNotLoaded,
+                ExtensionNotFound,
+                ExtensionFailed,
             ) as e:
                 log.exception(e)
                 await ctx.send(
