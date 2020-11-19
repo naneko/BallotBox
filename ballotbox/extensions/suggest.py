@@ -5,8 +5,8 @@ import discord
 import emoji
 from discord.ext import commands, tasks
 
-from helpers.database import conn
-from settings import SUGGEST_CHANNEL
+from ..helpers.database import conn
+from ..settings import SUGGEST_CHANNEL
 
 log = logging.getLogger(__name__)
 

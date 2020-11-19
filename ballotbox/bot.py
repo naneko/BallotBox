@@ -4,9 +4,9 @@ import sqlite3
 import discord
 from discord.ext import commands
 
-from extensions import INIT_EXTENSIONS
-from helpers.database import init_db
-from settings import DEBUG, COMMAND_PREFIX, TOKEN
+from .extensions import INIT_EXTENSIONS
+from .helpers.database import init_db
+from .settings import DEBUG, COMMAND_PREFIX, TOKEN
 
 log = logging.getLogger(__name__)
 

@@ -12,4 +12,4 @@ See example.py for an example of an extension
 
 # Default Cog Extensions to be loaded
 # Module location is relative to bot package
-INIT_EXTENSIONS = ["bot.extensions.system", "bot.extensions.suggest"]
+INIT_EXTENSIONS = ["ballotbox.extensions.system", "ballotbox.extensions.suggest"]
