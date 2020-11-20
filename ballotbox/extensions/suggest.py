@@ -51,12 +51,12 @@ class Suggest(commands.Cog):
         log.debug(f"Updating at {datetime.datetime.now()}")
 
         for msg_id, content, author_id, end_date in suggestions:
-            if end_date > datetime.datetime.now() - datetime.timedelta(seconds=5):
+            if end_date > datetime.datetime.now() - datetime.timedelta(seconds=30):
                 author = await self.bot.fetch_user(author_id)
                 msg = await channel.fetch_message(msg_id)
                 log.debug(f'Updated "{content}" by {author} which ends at {end_date}')
 
-                if end_date > datetime.datetime.now() + datetime.timedelta(days=1):
+                if end_date > datetime.datetime.now() + datetime.timedelta(days=1.25):
                     end_msg = "Voting ends in 2 days"
                 elif end_date > datetime.datetime.now() + datetime.timedelta(days=0.5):
                     end_msg = "Voting ends in 1 day"
