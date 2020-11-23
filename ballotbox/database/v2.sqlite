@@ -1,0 +1,11 @@
+PRAGMA foreign_keys = ON;
+
+-- Schema Version 2
+
+-- Add vote counts to table
+ALTER TABLE suggestions ADD yes_votes INTEGER;
+ALTER TABLE suggestions ADD no_votes INTEGER;
+
+-- Set Database Version to 2
+DELETE FROM meta;
+INSERT INTO meta VALUES (2);

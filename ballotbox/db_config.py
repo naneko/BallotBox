@@ -15,4 +15,4 @@ commands to use with migrations.
 Also make sure your migration updates the meta table with
 the right version, as shown in v0.sqlite.
 """
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2

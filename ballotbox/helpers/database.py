@@ -34,17 +34,19 @@ def init_db():
         version = version["version"]
     else:
         version = 0
+    log.debug(f"Current database is version {version}")
     if version > SCHEMA_VERSION:
         log.error(
             f"Database version {version} is newer than version {SCHEMA_VERSION} supported by this version. This bot does not support downgrading database versions. Please update."
         )
         exit()
-    for v in range(0, SCHEMA_VERSION + 1):
-        log.info(f"Updating database to schema version {v}")
-        with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/../database/v{v}.sqlite", "r"
-        ) as schema_file:
-            schema = schema_file.read()
-        conn.executescript(schema)
-    conn.commit()
+    elif version != SCHEMA_VERSION:
+        for v in range(version, SCHEMA_VERSION + 1):
+            log.info(f"Updating database to schema version {v}")
+            with open(
+                f"{os.path.dirname(os.path.abspath(__file__))}/../database/v{v}.sqlite", "r"
+            ) as schema_file:
+                schema = schema_file.read()
+            conn.executescript(schema)
+        conn.commit()
     log.info(f"Database initialized (Version {SCHEMA_VERSION})")
