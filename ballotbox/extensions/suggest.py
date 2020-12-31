@@ -54,8 +54,16 @@ class Suggest(commands.Cog):
         log.debug(f"Updating at {datetime.datetime.now()}")
 
         for msg_id, content, author_id, end_date, yes_count, no_count in suggestions:
-            author = await self.bot.fetch_user(author_id)
-            msg = await channel.fetch_message(msg_id)
+            try:
+                author = await self.bot.fetch_user(author_id)
+            except discord.errors.NotFound:
+                log.error(f'Failed to fetch author for "{content}" by {author_id} in message {msg_id} which ends at {end_date}')
+                continue
+            try:
+                msg = await channel.fetch_message(msg_id)
+            except discord.errors.NotFound:
+                log.error(f'Failed to fetch message for "{content}" by {author_id} in message {msg_id} which ends at {end_date}')
+                continue
             log.debug(f'Updated "{content}" by {author} which ends at {end_date}')
 
             if end_date > datetime.datetime.now() + datetime.timedelta(days=1.25):
