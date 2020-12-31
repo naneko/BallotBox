@@ -57,12 +57,14 @@ class Suggest(commands.Cog):
             try:
                 author = await self.bot.fetch_user(author_id)
             except discord.errors.NotFound:
-                log.error(f'Failed to fetch author for "{content}" by {author_id} in message {msg_id} which ends at {end_date}')
-                continue
+                author = None
             try:
                 msg = await channel.fetch_message(msg_id)
             except discord.errors.NotFound:
-                log.error(f'Failed to fetch message for "{content}" by {author_id} in message {msg_id} which ends at {end_date}')
+                log.error(f'Failed to update "{content}" by {author_id} in message {msg_id} which ends at {end_date}. Closing vote to avoid further errors.')
+                conn.execute("UPDATE suggestions SET yes_votes = 0, no_votes = 0 WHERE msg = ?",
+                             [msg_id])
+                conn.commit()
                 continue
             log.debug(f'Updated "{content}" by {author} which ends at {end_date}')
 
@@ -111,10 +113,15 @@ class Suggest(commands.Cog):
                 description=content,
                 color=color,
             )
-            embed.set_author(
-                name=author,
-                icon_url=author.avatar_url,
-            )
+            if author is not None:
+                embed.set_author(
+                    name=author,
+                    icon_url=author.avatar_url,
+                )
+            else:
+                embed.set_author(
+                    name=f"Unknown User ({author_id})"
+                )
             if end_msg is not None:
                 embed.set_footer(text=end_msg)
 
