@@ -145,7 +145,7 @@ class Suggest(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def refresh(self):
+    async def refresh(self, ctx):
         i = 0
         suggestions = conn.execute("SELECT * FROM suggestions").fetchall()
         channel = await self.bot.fetch_channel(SUGGEST_CHANNEL)
@@ -242,6 +242,8 @@ class Suggest(commands.Cog):
             await msg.edit(embed=embed)
 
             i += 1
+
+        await ctx.send("Done", delete_after=5)
 
 
 def setup(bot: commands.bot):
