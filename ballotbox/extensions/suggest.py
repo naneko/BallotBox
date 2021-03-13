@@ -21,7 +21,7 @@ class Suggest(commands.Cog):
     async def suggest(self, ctx: commands.context, *, suggestion: str):
         # For some dumb reason, the timer is 24 hours off so jank fix of 3 days instead of 2
         if DEBUG:
-            end_date = datetime.datetime.now() + datetime.timedelta(seconds=8)
+            end_date = datetime.datetime.now() + datetime.timedelta(days=0.5)
         else:
             end_date = datetime.datetime.now() + datetime.timedelta(days=2)
         embed = discord.Embed(
@@ -131,6 +131,106 @@ class Suggest(commands.Cog):
                     embed.add_field(
                         name=f":thumbsup:",
                         value=f"`{round(yes_count/(yes_count + no_count)*100)}%` ({yes_count} votes)",
+                    )
+                    embed.add_field(
+                        name=f":thumbsdown:",
+                        value=f"`{round(no_count / (yes_count + no_count) * 100)}%` ({no_count} votes)",
+                    )
+                else:
+                    embed.set_footer(text="No votes were cast")
+
+            await msg.edit(embed=embed)
+
+            i += 1
+
+    @commands.command()
+    @commands.is_owner()
+    async def refresh(self):
+        i = 0
+        suggestions = conn.execute("SELECT * FROM suggestions").fetchall()
+        channel = await self.bot.fetch_channel(SUGGEST_CHANNEL)
+
+        log.info(f"[FORCED] Updating at {datetime.datetime.now()}")
+
+        for msg_id, content, author_id, end_date, yes_count, no_count in suggestions:
+            try:
+                author = await self.bot.fetch_user(author_id)
+            except discord.errors.NotFound:
+                author = None
+            try:
+                msg = await channel.fetch_message(msg_id)
+            except discord.errors.NotFound:
+                log.error(
+                    f'Failed to update "{content}" by {author_id} in message {msg_id} which ends at {end_date}. Closing vote to avoid further errors.')
+                conn.execute("UPDATE suggestions SET yes_votes = 0, no_votes = 0 WHERE msg = ?",
+                             [msg_id])
+                conn.commit()
+                continue
+            log.info(f'Updated "{content}" by {author} which ends at {end_date}')
+
+            if end_date > datetime.datetime.now() + datetime.timedelta(days=1.25):
+                end_msg = "Voting ends in 2 days"
+            elif end_date > datetime.datetime.now() + datetime.timedelta(days=0.5):
+                end_msg = "Voting ends in 1 day"
+            elif end_date > datetime.datetime.now() + datetime.timedelta(hours=1):
+                end_msg = f"Voting ends in {round((end_date - datetime.datetime.now()).seconds / (60 * 60))} hours"
+            elif end_date > datetime.datetime.now() + datetime.timedelta(minutes=1):
+                end_msg = f"Voting ends in {round((end_date - datetime.datetime.now()).seconds / 60)} minutes"
+            elif end_date > datetime.datetime.now():
+                end_msg = "Voting ends in 1 minute"
+            else:
+                end_msg = None
+
+            yes_count = 0
+            no_count = 0
+
+            if end_date < datetime.datetime.now():
+                for reaction in msg.reactions:
+                    if type(reaction.emoji) is str:
+                        if emoji.demojize(reaction.emoji) == ":thumbs_up:":
+                            yes_count = reaction.count - 1
+                        elif emoji.demojize(reaction.emoji) == ":thumbs_down:":
+                            no_count = reaction.count - 1
+                conn.execute("UPDATE suggestions SET yes_votes = ?, no_votes = ? WHERE msg = ?",
+                             [yes_count, no_count, msg_id])
+                conn.commit()
+
+            if end_date > datetime.datetime.now():
+                color = discord.Color.blue()
+                title = None
+            elif yes_count > no_count:
+                color = discord.Color.green()
+                title = "Passed"
+            elif yes_count < no_count:
+                color = discord.Color.red()
+                title = "Failed"
+            else:
+                color = discord.Color.orange()
+                title = "Tied (Failed)"
+
+            embed = discord.Embed(
+                title=title,
+                description=content,
+                color=color,
+            )
+            if author is not None:
+                embed.set_author(
+                    name=author,
+                    icon_url=author.avatar_url,
+                )
+            else:
+                embed.set_author(
+                    name=f"Unknown User ({author_id})"
+                )
+            if end_msg is not None:
+                embed.set_footer(text=end_msg)
+
+            if end_date < datetime.datetime.now():
+                await msg.clear_reactions()
+                if yes_count + no_count != 0:
+                    embed.add_field(
+                        name=f":thumbsup:",
+                        value=f"`{round(yes_count / (yes_count + no_count) * 100)}%` ({yes_count} votes)",
                     )
                     embed.add_field(
                         name=f":thumbsdown:",
