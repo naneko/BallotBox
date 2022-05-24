@@ -101,7 +101,7 @@ class Suggest(commands.Cog):
                 no_count = 0
 
                 if end_date < datetime.datetime.now():
-                    end_msg = f"Voting ended <t:{int(time.mktime(end_date.timetuple()))}:R>"
+                    end_msg = None
                     for reaction in msg.reactions:
                         if type(reaction.emoji) is str:
                             if emoji.demojize(reaction.emoji) == ":thumbs_up:":
@@ -113,49 +113,51 @@ class Suggest(commands.Cog):
                     conn.commit()
 
             if end_date < datetime.datetime.now():
-                if yes_count > no_count:
-                    color = discord.Color.green()
-                    title = "Passed"
-                elif yes_count < no_count:
-                    color = discord.Color.red()
-                    title = "Failed"
-                else:
-                    color = discord.Color.orange()
-                    title = "Tied (Failed)"
+                pass
 
-                embed = discord.Embed(
-                    title=title,
-                    description=content,
-                    color=color,
+            if yes_count > no_count:
+                color = discord.Color.green()
+                title = "Passed"
+            elif yes_count < no_count:
+                color = discord.Color.red()
+                title = "Failed"
+            else:
+                color = discord.Color.orange()
+                title = "Tied (Failed)"
+
+            embed = discord.Embed(
+                title=title,
+                description=content,
+                color=color,
+            )
+            if author is not None:
+                embed.set_author(
+                    name=author,
+                    icon_url=author.avatar_url,
                 )
-                if author is not None:
-                    embed.set_author(
-                        name=author,
-                        icon_url=author.avatar_url,
+            else:
+                embed.set_author(
+                    name=f"Unknown User ({author_id})"
+                )
+
+            if end_date < datetime.datetime.now():
+                await msg.clear_reactions()
+                if yes_count + no_count != 0:
+                    embed.add_field(
+                        name=f":thumbsup:",
+                        value=f"`{round(yes_count / (yes_count + no_count) * 100)}%` ({yes_count} votes)",
+                    )
+                    embed.add_field(
+                        name=f":thumbsdown:",
+                        value=f"`{round(no_count / (yes_count + no_count) * 100)}%` ({no_count} votes)",
                     )
                 else:
-                    embed.set_author(
-                        name=f"Unknown User ({author_id})"
-                    )
-
-                if end_date < datetime.datetime.now():
-                    await msg.clear_reactions()
-                    if yes_count + no_count != 0:
-                        embed.add_field(
-                            name=f":thumbsup:",
-                            value=f"`{round(yes_count / (yes_count + no_count) * 100)}%` ({yes_count} votes)",
-                        )
-                        embed.add_field(
-                            name=f":thumbsdown:",
-                            value=f"`{round(no_count / (yes_count + no_count) * 100)}%` ({no_count} votes)",
-                        )
-                    else:
-                        embed.set_footer(text="No votes were cast")
+                    embed.set_footer(text="No votes were cast")
                     
-                if end_msg is not None:
-                    embed.add_field(text=f"*{end_msg}*")
+            if end_msg is not None:
+                embed.add_field(text=f"*{end_msg}*")
 
-                await msg.edit(embed=embed)
+            await msg.edit(embed=embed)
 
             i += 1
 
