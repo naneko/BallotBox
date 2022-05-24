@@ -115,9 +115,8 @@ class Suggest(commands.Cog):
             if end_date < datetime.datetime.now():
                 pass
 
-            if end_date > datetime.datetime.now():
-                color = discord.Color.blue()
-                title = None
+            color = discord.Color.blue()
+            title = None
             if yes_count > no_count:
                 color = discord.Color.green()
                 title = "Passed"
