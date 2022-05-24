@@ -47,7 +47,7 @@ class Suggest(commands.Cog):
 
     @tasks.loop(hours=24.0)
     async def auto_refresh(self):
-        self.refresh_helper()
+        await self.refresh_helper()
         
     async def refresh_helper(self):
         i = 0
@@ -231,7 +231,7 @@ class Suggest(commands.Cog):
 
             log.info(f"[FORCED] Refreshing at {datetime.datetime.now()}")
 
-            self.refresh_helper()
+            await self.refresh_helper()
         
         await ctx.message.delete()
         await ctx.send("Done", delete_after=5)
