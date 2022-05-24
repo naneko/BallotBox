@@ -33,7 +33,7 @@ class Suggest(commands.Cog):
             name=ctx.author,
             icon_url=ctx.author.avatar_url,
         )
-        embed.set_footer(text=f"Voting ends <t:{time.mktime(end_date.timetuple())}:R>")
+        embed.set_footer(text=f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>")
         channel = self.bot.get_channel(SUGGEST_CHANNEL)
         msg: discord.Message = await channel.send(embed=embed)
         await ctx.message.delete()
@@ -94,14 +94,14 @@ class Suggest(commands.Cog):
                 continue
             log.info(f'Updated "{content}" by {author} which ends at {end_date}')
 
-            end_msg = f"Voting ends <t:{time.mktime(end_date.timetuple())}:R>"
+            end_msg = f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>"
 
             if yes_count is None or no_count is None:
                 yes_count = 0
                 no_count = 0
 
                 if end_date < datetime.datetime.now():
-                    end_msg = f"Voting ended <t:{time.mktime(end_date.timetuple())}:R>"
+                    end_msg = f"Voting ended <t:{int(time.mktime(end_date.timetuple()))}:R>"
                     for reaction in msg.reactions:
                         if type(reaction.emoji) is str:
                             if emoji.demojize(reaction.emoji) == ":thumbs_up:":
