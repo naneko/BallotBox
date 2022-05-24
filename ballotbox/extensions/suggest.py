@@ -115,6 +115,9 @@ class Suggest(commands.Cog):
             if end_date < datetime.datetime.now():
                 pass
 
+            if end_date > datetime.datetime.now():
+                color = discord.Color.blue()
+                title = None
             if yes_count > no_count:
                 color = discord.Color.green()
                 title = "Passed"
@@ -155,7 +158,7 @@ class Suggest(commands.Cog):
                     embed.set_footer(text="No votes were cast")
                     
             if end_msg is not None:
-                embed.add_field(name="Cast your votes now using the reactions below!", value=f"*{end_msg}*")
+                embed.add_field(name="Cast your votes now using the reactions below!", value=f"{end_msg}")
 
             await msg.edit(embed=embed)
 
