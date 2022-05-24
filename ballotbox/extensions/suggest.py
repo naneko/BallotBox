@@ -33,7 +33,7 @@ class Suggest(commands.Cog):
             name=ctx.author,
             icon_url=ctx.author.avatar_url,
         )
-        embed.set_footer(text=f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>")
+        embed.add_field(text=f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>")
         channel = self.bot.get_channel(SUGGEST_CHANNEL)
         msg: discord.Message = await channel.send(embed=embed)
         await ctx.message.delete()
@@ -112,52 +112,50 @@ class Suggest(commands.Cog):
                                     [yes_count, no_count, msg_id])
                     conn.commit()
 
-                    if end_date > datetime.datetime.now():
-                        color = discord.Color.blue()
-                        title = None
-                    elif yes_count > no_count:
-                        color = discord.Color.green()
-                        title = "Passed"
-                    elif yes_count < no_count:
-                        color = discord.Color.red()
-                        title = "Failed"
-                    else:
-                        color = discord.Color.orange()
-                        title = "Tied (Failed)"
+            if end_date < datetime.datetime.now():
+                if yes_count > no_count:
+                    color = discord.Color.green()
+                    title = "Passed"
+                elif yes_count < no_count:
+                    color = discord.Color.red()
+                    title = "Failed"
+                else:
+                    color = discord.Color.orange()
+                    title = "Tied (Failed)"
 
-                    embed = discord.Embed(
-                        title=title,
-                        description=content,
-                        color=color,
+                embed = discord.Embed(
+                    title=title,
+                    description=content,
+                    color=color,
+                )
+                if author is not None:
+                    embed.set_author(
+                        name=author,
+                        icon_url=author.avatar_url,
                     )
-                    if author is not None:
-                        embed.set_author(
-                            name=author,
-                            icon_url=author.avatar_url,
+                else:
+                    embed.set_author(
+                        name=f"Unknown User ({author_id})"
+                    )
+
+                if end_date < datetime.datetime.now():
+                    await msg.clear_reactions()
+                    if yes_count + no_count != 0:
+                        embed.add_field(
+                            name=f":thumbsup:",
+                            value=f"`{round(yes_count / (yes_count + no_count) * 100)}%` ({yes_count} votes)",
+                        )
+                        embed.add_field(
+                            name=f":thumbsdown:",
+                            value=f"`{round(no_count / (yes_count + no_count) * 100)}%` ({no_count} votes)",
                         )
                     else:
-                        embed.set_author(
-                            name=f"Unknown User ({author_id})"
-                        )
+                        embed.set_footer(text="No votes were cast")
+                    
+                if end_msg is not None:
+                    embed.add_field(text=f"*{end_msg}*")
 
-                    if end_date < datetime.datetime.now():
-                        await msg.clear_reactions()
-                        if yes_count + no_count != 0:
-                            embed.add_field(
-                                name=f":thumbsup:",
-                                value=f"`{round(yes_count / (yes_count + no_count) * 100)}%` ({yes_count} votes)",
-                            )
-                            embed.add_field(
-                                name=f":thumbsdown:",
-                                value=f"`{round(no_count / (yes_count + no_count) * 100)}%` ({no_count} votes)",
-                            )
-                        else:
-                            embed.set_footer(text="No votes were cast")
-                        
-                    if end_msg is not None:
-                        embed.add_field(text=f"*{end_msg}*")
-
-                    await msg.edit(embed=embed)
+                await msg.edit(embed=embed)
 
             i += 1
 
