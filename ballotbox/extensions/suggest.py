@@ -155,7 +155,7 @@ class Suggest(commands.Cog):
                     embed.set_footer(text="No votes were cast")
                     
             if end_msg is not None:
-                embed.add_field(name=f"*{end_msg}*")
+                embed.add_field(name=" ", value=f"*{end_msg}*")
 
             await msg.edit(embed=embed)
 
