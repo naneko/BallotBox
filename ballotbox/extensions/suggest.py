@@ -68,7 +68,7 @@ class Suggest(commands.Cog):
 
             log.info(f"[FORCED] Refreshing at {datetime.datetime.now()}")
 
-            await self.refresh_helper(suggesetions)
+            await self.refresh_helper(suggestions)
         
         await ctx.message.delete()
         await ctx.send("Done", delete_after=5)
