@@ -74,7 +74,7 @@ class Suggest(commands.Cog):
         await ctx.send("Done", delete_after=5)
 
     
-    async def refresh_helper(self, suggesetions):
+    async def refresh_helper(self, suggestions):
         i = 0
         channel = await self.bot.fetch_channel(SUGGEST_CHANNEL)
 
