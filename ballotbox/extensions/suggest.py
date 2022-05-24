@@ -58,7 +58,7 @@ class Suggest(commands.Cog):
 
         log.debug(f"[AUTO] Updating at {datetime.datetime.now()}")
 
-        self.refresh_helper(suggestions)
+        await self.refresh_helper(suggestions)
 
     @commands.command()
     @commands.is_owner()
