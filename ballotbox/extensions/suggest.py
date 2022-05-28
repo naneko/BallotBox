@@ -33,7 +33,7 @@ class Suggest(commands.Cog):
             name=ctx.author,
             icon_url=ctx.author.avatar_url,
         )
-        embed.add_field(text=f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>")
+        embed.add_field(name="Cast your votes now using the reactions below!", value=f"Voting ends <t:{int(time.mktime(end_date.timetuple()))}:R>")
         channel = self.bot.get_channel(SUGGEST_CHANNEL)
         msg: discord.Message = await channel.send(embed=embed)
         await ctx.message.delete()
