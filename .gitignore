@@ -130,3 +130,5 @@ dmypy.json
 
 # Kiki Boilerplate
 *.db
+
+.idea/

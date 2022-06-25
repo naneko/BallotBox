@@ -50,14 +50,12 @@ class Suggest(commands.Cog):
     async def auto_refresh(self):
         suggestions = conn.execute("SELECT * FROM suggestions").fetchall()
         log.info(f"[AUTO] Refreshing at {datetime.datetime.now()}")
-        await self.refresh_helper(suggesetions)
+        await self.refresh_helper(suggestions)
 
     @tasks.loop(seconds=5.0 if DEBUG else 30.0)
     async def suggestion_updater(self):
         suggestions = conn.execute("SELECT * FROM suggestions WHERE yes_votes IS null AND no_votes IS null").fetchall()
-
         log.debug(f"[AUTO] Updating at {datetime.datetime.now()}")
-
         await self.refresh_helper(suggestions)
 
     @commands.command()
